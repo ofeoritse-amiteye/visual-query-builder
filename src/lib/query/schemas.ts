@@ -1,4 +1,71 @@
-import type { SchemaDefinition } from "./types";
+import type { DataRecord, SchemaDefinition } from "./types";
+
+const USER_COUNTRIES = ["Nigeria", "Ghana", "Kenya", "Canada", "United Kingdom"] as const;
+const USER_STATUSES = ["active", "trial", "paused", "blocked"] as const;
+
+const BASE_USERS: DataRecord[] = [
+  { name: "Ada Okafor", age: 28, country: "Nigeria", status: "active", purchases: 16, createdAt: "2026-01-12", verified: true },
+  { name: "Kwame Mensah", age: 34, country: "Ghana", status: "trial", purchases: 4, createdAt: "2026-02-19", verified: false },
+  { name: "Amina Bello", age: 22, country: "Nigeria", status: "active", purchases: 11, createdAt: "2025-11-30", verified: true },
+  { name: "Grace Wanjiku", age: 19, country: "Kenya", status: "paused", purchases: 2, createdAt: "2026-03-07", verified: false },
+  { name: "Noah Smith", age: 41, country: "Canada", status: "blocked", purchases: 27, createdAt: "2024-09-15", verified: true },
+  { name: "Lola Adeyemi", age: 31, country: "Nigeria", status: "active", purchases: 42, createdAt: "2026-04-26", verified: true },
+  { name: "Eleanor Brooks", age: 25, country: "United Kingdom", status: "trial", purchases: 7, createdAt: "2026-05-04", verified: false },
+  { name: "Tunde Balogun", age: 17, country: "Nigeria", status: "paused", purchases: 0, createdAt: "2026-05-12", verified: false }
+];
+
+function generateUsersDataset(total: number): DataRecord[] {
+  if (total <= BASE_USERS.length) {
+    return BASE_USERS.slice(0, total);
+  }
+
+  const generated: DataRecord[] = [...BASE_USERS];
+
+  for (let index = BASE_USERS.length; index < total; index += 1) {
+    generated.push({
+      name: `Generated User ${index + 1}`,
+      age: 18 + (index % 45),
+      country: USER_COUNTRIES[index % USER_COUNTRIES.length],
+      status: USER_STATUSES[index % USER_STATUSES.length],
+      purchases: index % 55,
+      createdAt: `2026-${String((index % 12) + 1).padStart(2, "0")}-${String((index % 27) + 1).padStart(2, "0")}`,
+      verified: index % 3 !== 0
+    });
+  }
+
+  return generated;
+}
+
+function generateOrdersDataset(total: number): DataRecord[] {
+  const channels = ["web", "mobile", "partner", "admin"] as const;
+  const fulfillmentStates = ["pending", "packed", "shipped", "delivered", "returned"] as const;
+  const base: DataRecord[] = [
+    { orderId: "ORD-1082", total: 240, channel: "web", fulfillment: "delivered", orderedAt: "2026-01-04", priority: false },
+    { orderId: "ORD-1139", total: 1800, channel: "partner", fulfillment: "shipped", orderedAt: "2026-03-18", priority: true },
+    { orderId: "ORD-1201", total: 64, channel: "mobile", fulfillment: "pending", orderedAt: "2026-05-15", priority: false },
+    { orderId: "ORD-1238", total: 920, channel: "admin", fulfillment: "packed", orderedAt: "2026-05-22", priority: true },
+    { orderId: "ORD-1289", total: 120, channel: "web", fulfillment: "returned", orderedAt: "2025-12-09", priority: false }
+  ];
+
+  if (total <= base.length) {
+    return base.slice(0, total);
+  }
+
+  const generated: DataRecord[] = [...base];
+
+  for (let index = base.length; index < total; index += 1) {
+    generated.push({
+      orderId: `ORD-${2000 + index}`,
+      total: 50 + (index % 2000),
+      channel: channels[index % channels.length],
+      fulfillment: fulfillmentStates[index % fulfillmentStates.length],
+      orderedAt: `2026-${String((index % 12) + 1).padStart(2, "0")}-${String((index % 27) + 1).padStart(2, "0")}`,
+      priority: index % 4 === 0
+    });
+  }
+
+  return generated;
+}
 
 export const SCHEMAS: SchemaDefinition[] = [
   {
@@ -8,22 +75,13 @@ export const SCHEMAS: SchemaDefinition[] = [
     fields: [
       { key: "name", label: "Name", type: "string" },
       { key: "age", label: "Age", type: "number" },
-      { key: "country", label: "Country", type: "enum", options: ["Nigeria", "Ghana", "Kenya", "Canada", "United Kingdom"] },
-      { key: "status", label: "Status", type: "enum", options: ["active", "trial", "paused", "blocked"] },
+      { key: "country", label: "Country", type: "enum", options: [...USER_COUNTRIES] },
+      { key: "status", label: "Status", type: "enum", options: [...USER_STATUSES] },
       { key: "purchases", label: "Purchases", type: "number" },
       { key: "createdAt", label: "Created at", type: "date" },
       { key: "verified", label: "Verified", type: "boolean" }
     ],
-    dataset: [
-      { name: "Ada Okafor", age: 28, country: "Nigeria", status: "active", purchases: 16, createdAt: "2026-01-12", verified: true },
-      { name: "Kwame Mensah", age: 34, country: "Ghana", status: "trial", purchases: 4, createdAt: "2026-02-19", verified: false },
-      { name: "Amina Bello", age: 22, country: "Nigeria", status: "active", purchases: 11, createdAt: "2025-11-30", verified: true },
-      { name: "Grace Wanjiku", age: 19, country: "Kenya", status: "paused", purchases: 2, createdAt: "2026-03-07", verified: false },
-      { name: "Noah Smith", age: 41, country: "Canada", status: "blocked", purchases: 27, createdAt: "2024-09-15", verified: true },
-      { name: "Lola Adeyemi", age: 31, country: "Nigeria", status: "active", purchases: 42, createdAt: "2026-04-26", verified: true },
-      { name: "Eleanor Brooks", age: 25, country: "United Kingdom", status: "trial", purchases: 7, createdAt: "2026-05-04", verified: false },
-      { name: "Tunde Balogun", age: 17, country: "Nigeria", status: "paused", purchases: 0, createdAt: "2026-05-12", verified: false }
-    ]
+    dataset: generateUsersDataset(120)
   },
   {
     id: "orders",
@@ -37,13 +95,7 @@ export const SCHEMAS: SchemaDefinition[] = [
       { key: "orderedAt", label: "Ordered at", type: "date" },
       { key: "priority", label: "Priority", type: "boolean" }
     ],
-    dataset: [
-      { orderId: "ORD-1082", total: 240, channel: "web", fulfillment: "delivered", orderedAt: "2026-01-04", priority: false },
-      { orderId: "ORD-1139", total: 1800, channel: "partner", fulfillment: "shipped", orderedAt: "2026-03-18", priority: true },
-      { orderId: "ORD-1201", total: 64, channel: "mobile", fulfillment: "pending", orderedAt: "2026-05-15", priority: false },
-      { orderId: "ORD-1238", total: 920, channel: "admin", fulfillment: "packed", orderedAt: "2026-05-22", priority: true },
-      { orderId: "ORD-1289", total: 120, channel: "web", fulfillment: "returned", orderedAt: "2025-12-09", priority: false }
-    ]
+    dataset: generateOrdersDataset(60)
   }
 ];
 
