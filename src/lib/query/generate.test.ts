@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateMongo, generateSql } from "./generate";
+import { generateGraphql, generateMongo, generateSql } from "./generate";
 import { SCHEMAS } from "./schemas";
 import { createInitialTree } from "./tree";
 
@@ -20,5 +20,18 @@ describe("query generation", () => {
     expect(JSON.parse(generateMongo(tree, schema))).toEqual({
       $and: [{ age: { $gt: 18 } }, { status: "active" }]
     });
+  });
+
+  it("generates GraphQL filter syntax", () => {
+    const schema = SCHEMAS[0];
+    const tree = createInitialTree(schema);
+    const output = generateGraphql(tree, schema);
+
+    expect(output).toContain("query UsersQuery");
+    expect(output).toContain("users(filter:");
+    expect(output).toContain("age:");
+    expect(output).toContain("gt: 18");
+    expect(output).toContain("status:");
+    expect(output).toContain("eq: \"active\"");
   });
 });

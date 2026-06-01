@@ -64,6 +64,7 @@ export function LibraryPanel() {
           type="file"
           accept="application/json"
           className="hidden"
+          data-testid="import-json-input"
           onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) {

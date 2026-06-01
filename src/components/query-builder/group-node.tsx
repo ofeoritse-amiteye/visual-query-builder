@@ -100,7 +100,7 @@ export const GroupNodeView = memo(function GroupNodeView({ nodeId, parentId, dep
 
       {!node.collapsed && (
         <SortableContext items={node.children} strategy={verticalListSortingStrategy}>
-          <div className="mt-3 space-y-3 border-l border-border pl-3" style={{ marginLeft: Math.min(depth, 8) * 2 }}>
+          <div className="mt-3 space-y-3 border-l border-border pl-3 animate-group-expand" style={{ marginLeft: Math.min(depth, 8) * 2 }}>
             {node.children.map((childId) => {
               const child = useQueryStore.getState().tree.nodes[childId];
               if (child?.type === "group") {
