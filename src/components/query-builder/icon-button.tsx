@@ -16,15 +16,17 @@ export function IconButton({ label, children, className, variant = "ghost", ...p
       aria-label={label}
       title={label}
       className={cn(
-        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-sm transition",
-        variant === "ghost" && "border-border bg-panel hover:bg-muted",
-        variant === "solid" && "border-accent bg-accent text-slate-950 hover:brightness-95",
-        variant === "danger" && "border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950 dark:text-red-200",
+        "icon-button-shell inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-sm transition duration-200 disabled:cursor-not-allowed disabled:opacity-45",
+        "hover:-translate-y-0.5 active:translate-y-0",
+        variant === "ghost" && "border-border/85 bg-panel/80 text-ink shadow-sm hover:border-accent/45 hover:bg-muted/80 hover:text-accent",
+        variant === "solid" && "border-accentSoft/50 bg-accentDeep text-white shadow-[0_8px_20px_rgb(var(--accent-deep)/0.28)] hover:bg-accent",
+        variant === "danger" && "border-danger/35 bg-danger/10 text-danger hover:border-danger/60 hover:bg-danger/15",
         className
       )}
       {...props}
     >
       {children}
+      <span className="icon-button-tooltip">{label}</span>
     </button>
   );
 }

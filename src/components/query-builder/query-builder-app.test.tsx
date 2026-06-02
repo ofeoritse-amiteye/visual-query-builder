@@ -4,7 +4,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { SCHEMAS } from "@/lib/query/schemas";
 import { useQueryStore } from "@/lib/query/store";
 import { QueryBuilderApp } from "./query-builder-app";
 

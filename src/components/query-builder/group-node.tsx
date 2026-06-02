@@ -1,9 +1,9 @@
 "use client";
 
-import { memo } from "react";
+import { memo, type CSSProperties } from "react";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ChevronDown, ChevronRight, FolderPlus, GripVertical, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FolderPlus, GitBranch, GripVertical, Plus, Trash2 } from "lucide-react";
 import { useQueryStore } from "@/lib/query/store";
 import type { SchemaDefinition, ValidationIssue } from "@/lib/query/types";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,8 @@ type GroupNodeProps = {
   schema: SchemaDefinition;
   issuesByNode: Map<string, ValidationIssue[]>;
 };
+
+const NODE_TONES = ["59 130 246", "96 165 250", "37 99 235", "125 211 252"];
 
 export const GroupNodeView = memo(function GroupNodeView({ nodeId, parentId, depth, schema, issuesByNode }: GroupNodeProps) {
   const node = useQueryStore((state) => state.tree.nodes[nodeId]);
@@ -35,15 +37,21 @@ export const GroupNodeView = memo(function GroupNodeView({ nodeId, parentId, dep
 
   const isRoot = node.id === rootId;
   const issues = issuesByNode.get(nodeId) ?? [];
+  const nodeStyle = {
+    "--node-accent": NODE_TONES[depth % NODE_TONES.length],
+    marginLeft: Math.min(depth, 8) * 2,
+    transform: CSS.Transform.toString(sortable.transform),
+    transition: sortable.transition
+  } as CSSProperties;
 
   return (
     <section
       ref={sortable.setNodeRef}
-      style={{ transform: CSS.Transform.toString(sortable.transform), transition: sortable.transition }}
+      style={nodeStyle}
       className={cn(
-        "rounded-md border bg-muted/35 p-3 transition",
-        selectedNodeId === nodeId ? "border-accent ring-2 ring-accent/20" : "border-border",
-        sortable.isDragging && "z-20 opacity-80"
+        "group-node relative rounded-lg border p-3 transition duration-200 md:p-4",
+        selectedNodeId === nodeId ? "border-accent ring-4 ring-accent/15" : "border-border/85 hover:border-accent/35",
+        sortable.isDragging && "z-20 rotate-[0.2deg] scale-[0.995] opacity-85 shadow-lift"
       )}
       onFocus={() => selectNode(nodeId)}
       onClick={(event) => {
@@ -52,13 +60,13 @@ export const GroupNodeView = memo(function GroupNodeView({ nodeId, parentId, dep
       }}
       data-testid="group-node"
     >
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2.5">
         {!isRoot && (
           <button
             type="button"
             aria-label="Drag group"
             title="Drag group"
-            className="flex h-9 w-8 items-center justify-center rounded-md text-ink/45 hover:bg-panel hover:text-ink"
+            className="flex h-9 w-8 items-center justify-center rounded-lg text-inkSoft transition hover:bg-panel hover:text-accent"
             {...sortable.attributes}
             {...sortable.listeners}
           >
@@ -68,19 +76,26 @@ export const GroupNodeView = memo(function GroupNodeView({ nodeId, parentId, dep
         <IconButton label={node.collapsed ? "Expand group" : "Collapse group"} onClick={() => updateGroup(nodeId, { collapsed: !node.collapsed })}>
           {node.collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </IconButton>
-        <div className="inline-flex rounded-md border border-border bg-panel p-1">
+        <div className="inline-flex rounded-lg border border-border/80 bg-panel/85 p-1 shadow-sm">
           {(["AND", "OR"] as const).map((combinator) => (
             <button
               key={combinator}
               type="button"
-              className={cn("h-8 rounded px-3 text-xs font-semibold transition", node.combinator === combinator ? "bg-accent text-slate-950" : "text-ink/65 hover:bg-muted")}
+              className={cn(
+                "h-8 rounded-md px-3 text-xs font-black transition duration-200",
+                node.combinator === combinator ? "bg-accent text-white shadow-[0_8px_22px_rgb(var(--accent-deep)/0.32)]" : "text-inkSoft hover:bg-muted/80 hover:text-ink"
+              )}
               onClick={() => updateGroup(nodeId, { combinator })}
             >
               {combinator}
             </button>
           ))}
         </div>
-        <span className="rounded-md border border-border bg-panel px-2.5 py-1 text-xs text-ink/70">{node.children.length} nodes</span>
+        <span className="soft-chip">
+          <GitBranch className="h-3.5 w-3.5" />
+          {node.children.length} nodes
+        </span>
+        {node.collapsed && <span className="soft-chip" data-tone="accent">Collapsed</span>}
         <div className="ml-auto flex items-center gap-2">
           <IconButton label="Add condition" onClick={() => addRule(nodeId)}>
             <Plus className="h-4 w-4" />
@@ -96,19 +111,25 @@ export const GroupNodeView = memo(function GroupNodeView({ nodeId, parentId, dep
         </div>
       </div>
 
-      {issues.length > 0 && <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-100">{issues[0].message}</p>}
+      {issues.length > 0 && (
+        <p className="mt-3 rounded-lg border border-warn/25 bg-warn/10 px-3 py-2 text-sm font-medium text-warn">{issues[0].message}</p>
+      )}
 
       {!node.collapsed && (
         <SortableContext items={node.children} strategy={verticalListSortingStrategy}>
-          <div className="mt-3 space-y-3 border-l border-border pl-3 animate-group-expand" style={{ marginLeft: Math.min(depth, 8) * 2 }}>
-            {node.children.map((childId) => {
-              const child = useQueryStore.getState().tree.nodes[childId];
-              if (child?.type === "group") {
-                return <GroupNodeView key={childId} nodeId={childId} parentId={nodeId} depth={depth + 1} schema={schema} issuesByNode={issuesByNode} />;
-              }
+          <div className="mt-3 space-y-3 border-l border-dashed border-border/90 pl-3 animate-group-expand md:pl-4">
+            {node.children.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-border/80 bg-panel/50 px-3 py-5 text-center text-sm font-medium text-inkSoft">Empty group</div>
+            ) : (
+              node.children.map((childId) => {
+                const child = useQueryStore.getState().tree.nodes[childId];
+                if (child?.type === "group") {
+                  return <GroupNodeView key={childId} nodeId={childId} parentId={nodeId} depth={depth + 1} schema={schema} issuesByNode={issuesByNode} />;
+                }
 
-              return <RuleNodeView key={childId} nodeId={childId} parentId={nodeId} schema={schema} issues={issuesByNode.get(childId) ?? []} />;
-            })}
+                return <RuleNodeView key={childId} nodeId={childId} parentId={nodeId} schema={schema} issues={issuesByNode.get(childId) ?? []} />;
+              })
+            )}
           </div>
         </SortableContext>
       )}
