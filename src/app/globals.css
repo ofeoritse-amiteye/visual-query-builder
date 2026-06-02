@@ -159,15 +159,107 @@ textarea:focus-visible {
   animation: pulse-soft 1.4s ease-in-out infinite;
 }
 
+@keyframes loader-orbit {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-bar {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+@keyframes loader-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes loader-step {
+  0%,
+  100% {
+    opacity: 0.42;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-loader-orbit {
+  animation: loader-orbit 2.4s linear infinite;
+}
+
+.animate-loader-bar {
+  animation: loader-bar 1.65s ease-in-out infinite;
+}
+
+.animate-loader-shimmer {
+  animation: loader-shimmer 2.2s ease-in-out infinite;
+}
+
+.animate-loader-step {
+  animation: loader-step 1.6s ease-in-out infinite;
+}
+
+.builder-loader-track {
+  background: rgb(var(--muted) / 0.85);
+  border-radius: 999px;
+  height: 0.45rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.builder-loader-track::after {
+  animation: loader-bar 1.65s ease-in-out infinite;
+  background: linear-gradient(90deg, rgb(var(--accent-soft)), rgb(var(--accent-deep)), rgb(var(--accent-glow)));
+  border-radius: inherit;
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 38%;
+}
+
+.builder-loader-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--muted) / 0.55) 0%,
+    rgb(var(--panel) / 0.95) 45%,
+    rgb(var(--muted) / 0.55) 90%
+  );
+  background-size: 220% 100%;
+  border-radius: 10px;
+  height: 0.65rem;
+}
+
 .app-shell {
   isolation: isolate;
-  overflow-x: hidden;
+  max-width: 100%;
   position: relative;
 }
 
 .top-shell,
 .work-panel {
   background: rgb(var(--panel) / 0.58);
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
   border: 1px solid rgb(var(--glass-highlight) / 0.55);
   border-radius: 20px;
   box-shadow:
@@ -186,6 +278,10 @@ textarea:focus-visible {
     0 28px 80px rgb(0 0 0 / 0.42),
     0 1px 0 rgb(var(--glass-highlight) / 0.08) inset,
     0 0 0 1px rgb(var(--accent-deep) / 0.2);
+}
+
+.top-shell.builder-splash-card {
+  width: min(100%, 28rem);
 }
 
 .panel-header {

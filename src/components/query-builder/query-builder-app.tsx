@@ -114,7 +114,7 @@ export function QueryBuilderApp() {
 
   return (
     <main className="app-shell min-h-screen px-3 py-4 md:px-6 md:py-6 lg:px-8">
-      <div className="mx-auto flex max-w-[1680px] flex-col gap-5">
+      <div className="mx-auto flex min-w-0 max-w-[1680px] flex-col gap-5">
         <header className="top-shell animate-panel-in overflow-visible p-4 md:p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 flex-wrap items-start gap-3">
@@ -152,7 +152,7 @@ export function QueryBuilderApp() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-5 grid grid-cols-4 gap-2">
             <Metric label="Rules" value={treeMetrics.rules} icon={ListChecks} />
             <Metric label="Groups" value={treeMetrics.groups} icon={Layers3} />
             <Metric label="Matches" value={`${results.length}/${schema.dataset.length}`} icon={Database} />
@@ -160,9 +160,9 @@ export function QueryBuilderApp() {
           </div>
         </header>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_430px]">
-          <div className="space-y-5">
-            <section className="work-panel animate-panel-in overflow-hidden" style={{ animationDelay: "0.04s" }}>
+        <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,430px)]">
+          <div className="min-w-0 space-y-5">
+            <section className="work-panel animate-panel-in min-w-0 max-w-full" style={{ animationDelay: "0.04s" }}>
               <div className="panel-header flex flex-wrap items-center gap-3 px-4 py-3 md:px-5">
                 <div>
                   <p className="section-kicker">Builder</p>
@@ -179,7 +179,7 @@ export function QueryBuilderApp() {
                   </span>
                 </div>
               </div>
-              <div className="query-canvas p-3 md:p-5">
+              <div className="query-canvas overflow-x-auto p-3 md:p-5">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                   <GroupNodeView nodeId={tree.rootId} depth={0} schema={schema} issuesByNode={issuesByNode} />
                 </DndContext>
@@ -187,7 +187,7 @@ export function QueryBuilderApp() {
             </section>
             <ResultsPanel schema={schema} results={results} canExecute={canExecute} onExecute={runQuery} />
           </div>
-          <aside className="space-y-5 xl:sticky xl:top-5 xl:self-start">
+          <aside className="min-w-0 space-y-5 xl:sticky xl:top-5 xl:self-start">
             <PreviewPanel tree={tree} schema={schema} issues={issues} />
             <LibraryPanel />
           </aside>
@@ -224,13 +224,13 @@ function getTreeMetrics(tree: QueryTree) {
 
 function Metric({ label, value, icon: Icon }: { label: string; value: number | string; icon: typeof Activity }) {
   return (
-    <div className="glass-tile flex min-w-0 items-center gap-3 rounded-2xl px-3 py-2.5">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent/15 text-accent ring-1 ring-accentSoft/30">
-        <Icon className="h-4 w-4" />
+    <div className="glass-tile flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 text-center sm:flex-row sm:items-center sm:gap-2.5 sm:rounded-2xl sm:px-2.5 sm:py-2.5 sm:text-left md:gap-3 md:px-3">
+      <span className="hidden h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent/15 text-accent ring-1 ring-accentSoft/30 sm:grid md:h-9 md:w-9 md:rounded-xl">
+        <Icon className="h-3.5 w-3.5 md:h-4 md:w-4" />
       </span>
-      <span className="min-w-0">
-        <span className="block text-lg font-black leading-none text-ink">{value}</span>
-        <span className="mt-1 block truncate text-xs font-bold uppercase tracking-wide text-inkSoft">{label}</span>
+      <span className="min-w-0 w-full">
+        <span className="block truncate text-sm font-black leading-none text-ink sm:text-base md:text-lg">{value}</span>
+        <span className="mt-0.5 block truncate text-[0.625rem] font-bold uppercase leading-tight tracking-wide text-inkSoft sm:text-[0.68rem] md:text-xs">{label}</span>
       </span>
     </div>
   );

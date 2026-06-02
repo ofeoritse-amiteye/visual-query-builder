@@ -82,7 +82,7 @@ describe("QueryBuilderApp", () => {
     const ageInput = screen.getAllByRole("spinbutton")[0];
     await user.clear(ageInput);
     await user.type(ageInput, "999");
-    await user.click(screen.getByRole("button", { name: "Run" }));
+    await user.click(screen.getByTestId("run-query"));
 
     await waitFor(
       () => {

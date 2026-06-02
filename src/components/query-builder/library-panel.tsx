@@ -47,13 +47,13 @@ export function LibraryPanel() {
   }
 
   return (
-    <section className="work-panel animate-panel-in overflow-hidden" style={{ animationDelay: "0.16s" }}>
-      <div className="panel-header flex items-center gap-2 px-4 py-3">
-        <div>
+    <section className="work-panel animate-panel-in min-w-0 max-w-full" style={{ animationDelay: "0.16s" }}>
+      <div className="panel-header flex flex-wrap items-center gap-2 px-4 py-3">
+        <div className="min-w-0 flex-1">
           <p className="section-kicker">Library</p>
           <h2 className="mt-1 text-lg font-black text-ink">Presets and history</h2>
         </div>
-        <div className="ml-auto flex gap-2">
+        <div className="flex shrink-0 gap-2">
           <IconButton label="Save preset" onClick={() => savePreset()}>
             <Save className="h-4 w-4" />
           </IconButton>
@@ -66,7 +66,7 @@ export function LibraryPanel() {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="min-w-0 p-4">
         <button
           type="button"
           className={cn(
@@ -115,7 +115,7 @@ export function LibraryPanel() {
 
         {importError && <p className="mt-3 rounded-lg border border-danger/25 bg-danger/10 px-3 py-2 text-sm font-medium text-danger">{importError}</p>}
 
-        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+        <div className="mt-4 grid min-w-0 gap-4">
           <SnapshotList title="Saved presets" empty="No saved presets" snapshots={presets} onLoad={loadSnapshot} onDelete={deletePreset} />
           <SnapshotList title="History" empty="No executions yet" snapshots={history} onLoad={loadSnapshot} />
         </div>

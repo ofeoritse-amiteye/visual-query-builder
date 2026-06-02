@@ -34,20 +34,19 @@ export function PreviewPanel({ tree, schema, issues }: PreviewPanelProps) {
   }
 
   return (
-    <section className="work-panel animate-panel-in overflow-hidden" style={{ animationDelay: "0.08s" }}>
-      <div className="panel-header flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <div>
+    <section className="work-panel animate-panel-in min-w-0 max-w-full" style={{ animationDelay: "0.08s" }}>
+      <div className="panel-header flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <p className="section-kicker">Preview</p>
-          <h2 className="mt-1 text-lg font-black text-ink">Generated query</h2>
         </div>
-        <div className="inline-flex rounded-xl border border-white/20 bg-white/10 p-1 backdrop-blur-md">
+        <div className="inline-flex max-w-full overflow-x-auto rounded-xl border border-white/20 bg-white/10 p-1 backdrop-blur-md">
           {formats.map((format) => {
             const Icon = format.icon;
             return (
               <button
                 key={format.id}
                 type="button"
-                className={cn("inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-black transition duration-200", previewFormat === format.id ? "bg-accent text-white shadow-[0_8px_20px_rgb(var(--accent-deep)/0.35)]" : "text-inkSoft hover:bg-white/40 hover:text-ink")}
+                className={cn("inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-xs font-black transition duration-200", previewFormat === format.id ? "bg-accent text-white shadow-[0_8px_20px_rgb(var(--accent-deep)/0.35)]" : "text-inkSoft hover:bg-white/40 hover:text-ink")}
                 onClick={() => setPreviewFormat(format.id)}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -58,23 +57,23 @@ export function PreviewPanel({ tree, schema, issues }: PreviewPanelProps) {
         </div>
       </div>
 
-      <div className="p-4">
-        <div className="overflow-hidden rounded-2xl border border-accentSoft/25 shadow-[0_22px_50px_rgb(var(--accent-deep)/0.18)]">
-          <div className="code-panel flex items-center gap-2 border-b border-white/10 px-3 py-2.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b6b]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#fbbf24]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#60a5fa]" />
-            <span className="ml-2 inline-flex min-w-0 items-center gap-2 text-xs font-bold uppercase tracking-wide text-white/60">
-              <Terminal className="h-3.5 w-3.5" />
+      <div className="min-w-0 p-4">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-accentSoft/25 shadow-[0_22px_50px_rgb(var(--accent-deep)/0.18)]">
+          <div className="code-panel flex flex-wrap items-center gap-2 border-b border-white/10 px-3 py-2.5">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#ff6b6b]" />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#fbbf24]" />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#60a5fa]" />
+            <span className="inline-flex min-w-0 items-center gap-2 text-xs font-bold uppercase tracking-wide text-white/60">
+              <Terminal className="h-3.5 w-3.5 shrink-0" />
               {previewFormat}
             </span>
-            <button type="button" className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-md border border-white/10 bg-white/10 px-2.5 text-xs font-bold text-white/80 transition hover:bg-white/15" onClick={copyPreview}>
+            <button type="button" className="ml-auto inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-white/10 bg-white/10 px-2.5 text-xs font-bold text-white/80 transition hover:bg-white/15" onClick={copyPreview}>
               {copied ? <ClipboardCheck className="h-3.5 w-3.5 text-accentGlow" /> : <Clipboard className="h-3.5 w-3.5" />}
               {copied ? "Copied" : "Copy"}
             </button>
           </div>
-          <pre className="code-panel max-h-[360px] overflow-auto p-4 text-xs leading-6">
-            <code>{preview}</code>
+          <pre className="code-panel max-h-[360px] overflow-x-auto overflow-y-auto p-4 text-xs leading-6">
+            <code className="block min-w-0 whitespace-pre-wrap break-words sm:whitespace-pre">{preview}</code>
           </pre>
         </div>
 
