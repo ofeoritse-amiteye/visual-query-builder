@@ -5,7 +5,7 @@ A schema-driven visual query builder built with Next.js App Router and TypeScrip
 ## Live Demo
 
 - **Production:** [https://visual-query-builder-fez.vercel.app/](https://visual-query-builder-fez.vercel.app/)
-- **Demo video:** [https://www.loom.com/share/7761c14be23040b7a7b0cc42e4db3ba5](https://www.loom.com/share/7761c14be23040b7a7b0cc42e4db3ba5)
+- **Demo video:** [https://www.loom.com/share/01cd25cfdc6c4352b0b0f2b2494fce45](https://www.loom.com/share/01cd25cfdc6c4352b0b0f2b2494fce45)
 
 ## Running Locally
 
