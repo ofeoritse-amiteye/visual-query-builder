@@ -44,9 +44,31 @@ export function createGroup(combinator: LogicOperator = "AND", children: string[
 }
 
 export function createInitialTree(schema: SchemaDefinition): QueryTree {
-  const firstRule = createRule(schema, schema.fields.find((field) => field.key === "age")?.key ?? schema.fields[0].key);
-  const secondRule = createRule(schema, schema.fields.find((field) => field.key === "status")?.key ?? schema.fields[0].key);
-  const root = createGroup("AND", [firstRule.id, secondRule.id]);
+  const firstField = getField(schema, schema.fields.find((field) => field.key === "age")?.key ?? schema.fields[0].key) ?? schema.fields[0];
+  const secondField = getField(schema, schema.fields.find((field) => field.key === "status")?.key ?? schema.fields[0].key) ?? schema.fields[0];
+  const firstOperator = getDefaultOperator(firstField);
+  const secondOperator = getDefaultOperator(secondField);
+  const firstRule: RuleNode = {
+    id: `rule-${schema.id}-primary`,
+    type: "rule",
+    field: firstField.key,
+    operator: firstOperator,
+    value: getDefaultValue(firstField, firstOperator)
+  };
+  const secondRule: RuleNode = {
+    id: `rule-${schema.id}-secondary`,
+    type: "rule",
+    field: secondField.key,
+    operator: secondOperator,
+    value: getDefaultValue(secondField, secondOperator)
+  };
+  const root: GroupNode = {
+    id: `group-${schema.id}-root`,
+    type: "group",
+    combinator: "AND",
+    children: [firstRule.id, secondRule.id],
+    collapsed: false
+  };
 
   if (firstRule.field === "age") {
     firstRule.operator = "greaterThan";

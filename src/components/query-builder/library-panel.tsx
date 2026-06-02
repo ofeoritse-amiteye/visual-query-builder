@@ -1,14 +1,16 @@
 "use client";
 
 import { Download, History, Save, Trash2, Upload } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { getSchema } from "@/lib/query/schemas";
 import { useQueryStore } from "@/lib/query/store";
 import { validateImportedTree } from "@/lib/query/validation";
+import { cn } from "@/lib/utils";
 import { IconButton } from "./icon-button";
 
 export function LibraryPanel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragActive, setDragActive] = useState(false);
   const tree = useQueryStore((state) => state.tree);
   const schemaId = useQueryStore((state) => state.schemaId);
   const history = useQueryStore((state) => state.history);
@@ -45,9 +47,12 @@ export function LibraryPanel() {
   }
 
   return (
-    <section className="rounded-md border border-border bg-panel p-4 shadow-soft">
-      <div className="flex items-center gap-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/60">Library</h2>
+    <section className="work-panel animate-panel-in overflow-hidden" style={{ animationDelay: "0.16s" }}>
+      <div className="panel-header flex items-center gap-2 px-4 py-3">
+        <div>
+          <p className="section-kicker">Library</p>
+          <h2 className="mt-1 text-lg font-black text-ink">Presets and history</h2>
+        </div>
         <div className="ml-auto flex gap-2">
           <IconButton label="Save preset" onClick={() => savePreset()}>
             <Save className="h-4 w-4" />
@@ -59,6 +64,40 @@ export function LibraryPanel() {
             <Upload className="h-4 w-4" />
           </IconButton>
         </div>
+      </div>
+
+      <div className="p-4">
+        <button
+          type="button"
+          className={cn(
+            "w-full rounded-lg border border-dashed px-3 py-4 text-left transition duration-200",
+            dragActive ? "border-accent bg-accent/10" : "border-border/90 bg-muted/35 hover:border-accent/45 hover:bg-muted/55"
+          )}
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={(event) => {
+            event.preventDefault();
+            setDragActive(false);
+            const file = event.dataTransfer.files?.[0];
+            if (file) {
+              void importJson(file);
+            }
+          }}
+        >
+          <span className="flex items-center gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-panel text-accent shadow-sm">
+              <Upload className="h-4 w-4" />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-black text-ink">Import query JSON</span>
+              <span className="mt-1 block text-xs font-medium text-inkSoft">Drop a file here or open the file picker.</span>
+            </span>
+          </span>
+        </button>
         <input
           ref={fileInputRef}
           type="file"
@@ -73,11 +112,13 @@ export function LibraryPanel() {
             event.target.value = "";
           }}
         />
-      </div>
-      {importError && <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-100">{importError}</p>}
-      <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-        <SnapshotList title="Saved presets" empty="No saved presets" snapshots={presets} onLoad={loadSnapshot} onDelete={deletePreset} />
-        <SnapshotList title="History" empty="No executions yet" snapshots={history} onLoad={loadSnapshot} />
+
+        {importError && <p className="mt-3 rounded-lg border border-danger/25 bg-danger/10 px-3 py-2 text-sm font-medium text-danger">{importError}</p>}
+
+        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+          <SnapshotList title="Saved presets" empty="No saved presets" snapshots={presets} onLoad={loadSnapshot} onDelete={deletePreset} />
+          <SnapshotList title="History" empty="No executions yet" snapshots={history} onLoad={loadSnapshot} />
+        </div>
       </div>
     </section>
   );
@@ -98,19 +139,20 @@ function SnapshotList({
 }) {
   return (
     <div>
-      <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink/75">
+      <h3 className="mb-2 flex items-center gap-2 text-sm font-black text-ink">
         <History className="h-4 w-4" />
         {title}
+        <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs font-black text-inkSoft">{snapshots.length}</span>
       </h3>
       <div className="space-y-2">
         {snapshots.length === 0 ? (
-          <p className="rounded-md border border-dashed border-border px-3 py-4 text-sm text-ink/55">{empty}</p>
+          <p className="rounded-lg border border-dashed border-border/90 bg-muted/25 px-3 py-4 text-sm font-medium text-inkSoft">{empty}</p>
         ) : (
           snapshots.map((snapshot) => (
-            <div key={snapshot.id} className="flex items-center gap-2 rounded-md border border-border bg-muted/45 p-2">
-              <button type="button" className="min-w-0 flex-1 text-left text-sm hover:text-accent" onClick={() => onLoad(snapshot)}>
-                <span className="block truncate font-medium">{snapshot.name}</span>
-                <span className="block truncate text-xs text-ink/50">{new Date(snapshot.createdAt).toLocaleString()}</span>
+            <div key={snapshot.id} className="flex items-center gap-2 rounded-lg border border-border/80 bg-panel/75 p-2 shadow-sm transition hover:border-accent/35 hover:bg-muted/45">
+              <button type="button" className="min-w-0 flex-1 rounded-md px-1 text-left text-sm hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" onClick={() => onLoad(snapshot)}>
+                <span className="block truncate font-black">{snapshot.name}</span>
+                <span className="mt-0.5 block truncate text-xs font-medium text-inkSoft">{new Date(snapshot.createdAt).toLocaleString()}</span>
               </button>
               {onDelete && (
                 <IconButton label="Delete preset" variant="danger" onClick={() => onDelete(snapshot.id)}>
