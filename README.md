@@ -2,6 +2,11 @@
 
 A schema-driven visual query builder built with Next.js App Router and TypeScript. It supports recursive condition groups, live SQL/Mongo/GraphQL previews, simulated execution against mock datasets, saved presets, history, JSON import/export, theme switching, keyboard shortcuts, and drag-and-drop sibling reordering.
 
+## Live Demo
+
+- **Production:** [https://visual-query-builder-fez.vercel.app/](https://visual-query-builder-fez.vercel.app/)
+- **Demo video:** [https://www.loom.com/share/7761c14be23040b7a7b0cc42e4db3ba5](https://www.loom.com/share/7761c14be23040b7a7b0cc42e4db3ba5)
+
 ## Running Locally
 
 ```bash
